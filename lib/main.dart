@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/loginscreen.dart';
-import 'screens/adminscreen.dart';
-import 'screens/userscreen.dart';
+import 'screens/allscreens.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +28,7 @@ class MyApp extends StatelessWidget {
         '/loginscreen': (context) => const LoginScreen(),
         '/userscreen': (context) => const UserScreen(),
         '/adminscreen': (context) => const AdminScreen(),
+        '/mngusersscreen': (context) => const MngUsersScreen(),
       },
     );
   }

@@ -22,8 +22,10 @@ class AdminScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: Container(
-          padding: const EdgeInsets.all(10),
+          alignment: Alignment.center,
+          padding: const EdgeInsets.all(20),
           child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               AdminInfoBox(
                 currentUser: user,
@@ -47,27 +49,36 @@ class AdminInfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(5, 20, 5, 20),
-      child: Column(
-        children: [
-          const Text(
-            'Hoşgeldin',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: 25,
+      margin: const EdgeInsets.fromLTRB(5, 50, 5, 50),
+      child: (currentUser.name != null && currentUser.surname != null)
+          ? Column(
+              children: [
+                const Text(
+                  'Hoşgeldin',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 25,
+                  ),
+                ),
+                Text(
+                  currentUser.name! + ' ' + currentUser.surname!,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 25,
+                  ),
+                ),
+              ],
+            )
+          : const Text(
+              '(İsim Mevcut Değil)',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 25,
+              ),
             ),
-          ),
-          Text(
-            currentUser.name! + ' ' + currentUser.surname!,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 25,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -80,12 +91,13 @@ class ManageUsersButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigator.pop(context);
+        Navigator.pushNamed(context, '/mngusersscreen');
       },
       child: Container(
         alignment: Alignment.center,
         height: 50,
         margin: const EdgeInsets.all(5),
+        constraints: const BoxConstraints(maxWidth: 500),
         child: const Text(
           'Kullanıcıları Yönet',
           textAlign: TextAlign.center,
@@ -115,6 +127,7 @@ class ManageCampsButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         height: 50,
+        constraints: const BoxConstraints(maxWidth: 500),
         margin: const EdgeInsets.all(5),
         child: const Text(
           'Kamp Alanlarını Yönet',
@@ -145,6 +158,7 @@ class ManageRsvsButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         height: 50,
+        constraints: const BoxConstraints(maxWidth: 500),
         margin: const EdgeInsets.all(5),
         child: const Text(
           'Rezervasyonları Yönet',
