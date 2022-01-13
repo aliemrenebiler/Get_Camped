@@ -1,7 +1,7 @@
 // BURADA GEREKLİ SINIFLARI OLUŞTURABİLİRİZ
 
 class User {
-  int? ssn;
+  String? ssn;
   String? name;
   String? surname;
   String? phone;
