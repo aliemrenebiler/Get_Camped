@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'screens/loginscreen.dart';
 import 'screens/adminscreen.dart';
 import 'screens/userscreen.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.manual,
+    overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom],
+  );
   runApp(const MyApp());
 }
 
@@ -19,11 +25,11 @@ class MyApp extends StatelessWidget {
         highlightColor: Colors.transparent,
         splashFactory: NoSplash.splashFactory,
       ),
-      initialRoute: '/homescreen',
+      initialRoute: '/loginscreen',
       routes: {
-        '/homescreen': (context) => const LoginScreen(),
-        '/storyscreen': (context) => const UserScreen(),
-        '/choosescreen': (context) => const AdminScreen(),
+        '/loginscreen': (context) => const LoginScreen(),
+        '/userscreen': (context) => const UserScreen(),
+        '/adminscreen': (context) => const AdminScreen(),
       },
     );
   }

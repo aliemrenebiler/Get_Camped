@@ -5,6 +5,29 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
+          alignment: Alignment.center,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/userscreen');
+                },
+                child: const Text('USER PAGE'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/adminscreen');
+                },
+                child: const Text('ADMIN PAGE'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

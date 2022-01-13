@@ -5,6 +5,10 @@ class UserScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(
+      body: SafeArea(
+        child: const Text('THIS IS USER PAGE'),
+      ),
+    );
   }
 }
