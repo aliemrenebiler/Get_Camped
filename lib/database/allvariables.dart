@@ -2,4 +2,4 @@ import 'allclasses.dart';
 
 // BURAYA TÜM DEĞİŞKENLERİ YAZABİLİRİZ
 
-var user = User();
+var user = User(name: 'Sıla Nursu', surname: 'Yücel');
