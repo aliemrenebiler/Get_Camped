@@ -122,7 +122,7 @@ class ManageCampsButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigator.pop(context);
+        Navigator.pushNamed(context, '/mngcampsscreen');
       },
       child: Container(
         alignment: Alignment.center,

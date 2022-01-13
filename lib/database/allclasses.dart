@@ -15,3 +15,23 @@ class User {
     this.hesCode,
   });
 }
+
+class Camp {
+  String? id;
+  String? name;
+  String? city;
+  int? capacity;
+  double? dailyPrice;
+  bool? tent;
+  double? tentPrice;
+
+  Camp({
+    this.id,
+    this.name,
+    this.city,
+    this.capacity,
+    this.dailyPrice,
+    this.tent,
+    this.tentPrice,
+  });
+}

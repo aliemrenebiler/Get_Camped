@@ -10,6 +10,10 @@ class MngUsersScreen extends StatefulWidget {
 }
 
 class _MngUsersScreenState extends State<MngUsersScreen> {
+  refresh() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +90,7 @@ class SearchBarBox extends StatelessWidget {
               ),
             ),
             decoration: const BoxDecoration(
-              color: Colors.black54,
+              color: Colors.red,
               borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
           ),
@@ -109,7 +113,7 @@ class SearchBarBox extends StatelessWidget {
               ),
             ),
             decoration: const BoxDecoration(
-              color: Colors.black54,
+              color: Colors.blueAccent,
               borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
           ),
@@ -143,7 +147,7 @@ class SearchBarBox extends StatelessWidget {
               ),
             ),
             decoration: const BoxDecoration(
-              color: Colors.black54,
+              color: Colors.blueAccent,
               borderRadius: BorderRadius.all(Radius.circular(5)),
             ),
           ),

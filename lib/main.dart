@@ -28,7 +28,10 @@ class MyApp extends StatelessWidget {
         '/loginscreen': (context) => const LoginScreen(),
         '/userscreen': (context) => const UserScreen(),
         '/adminscreen': (context) => const AdminScreen(),
+
+        // admin panel routes
         '/mngusersscreen': (context) => const MngUsersScreen(),
+        '/mngcampsscreen': (context) => const MngCampsScreen(),
       },
     );
   }

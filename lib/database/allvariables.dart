@@ -13,8 +13,24 @@ var currentUser = User(
   hesCode: '1234567890',
 );
 
+var currentCamp = Camp(
+  id: '0987654321',
+  name: 'MyCamp.com',
+  city: 'İstanbul',
+  capacity: 100,
+  dailyPrice: 20,
+  tent: true,
+  tentPrice: 10,
+);
+
 var ssnController = TextEditingController();
 var nameController = TextEditingController();
 var surnameController = TextEditingController();
 var phoneController = TextEditingController();
 var hesCodeController = TextEditingController();
+
+var campIdController = TextEditingController();
+var cityController = TextEditingController();
+var dailyPriceController = TextEditingController();
+var tentController = TextEditingController();
+var tentPriceController = TextEditingController();
