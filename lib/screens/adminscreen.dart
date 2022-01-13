@@ -28,11 +28,11 @@ class AdminScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
               AdminInfoBox(
-                currentUser: user,
+                user: currentUser,
               ),
-              ManageUsersButton(),
-              ManageCampsButton(),
-              ManageRsvsButton(),
+              const ManageUsersButton(),
+              const ManageCampsButton(),
+              const ManageRsvsButton(),
             ],
           ),
         ),
@@ -43,14 +43,14 @@ class AdminScreen extends StatelessWidget {
 
 // Admin Bilgileri
 class AdminInfoBox extends StatelessWidget {
-  final User currentUser;
-  const AdminInfoBox({Key? key, required this.currentUser}) : super(key: key);
+  final User user;
+  const AdminInfoBox({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.fromLTRB(5, 50, 5, 50),
-      child: (currentUser.name != null && currentUser.surname != null)
+      child: (user.name != null && user.surname != null)
           ? Column(
               children: [
                 const Text(
@@ -62,7 +62,7 @@ class AdminInfoBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  currentUser.name! + ' ' + currentUser.surname!,
+                  user.name! + ' ' + user.surname!,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.black,
