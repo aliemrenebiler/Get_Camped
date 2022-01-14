@@ -10,11 +10,11 @@ var row;
 List<User> userList = [];
 
 var connection = PostgreSQLConnection(
-  "localhost",
+  '10.0.2.2',
   5432,
-  "getCamped_db",
-  username: "postgres",
-  password: "7756",
+  'getCamped_db',
+  username: 'postgres',
+  password: '7756',
 );
 
 var currentUser = User(
