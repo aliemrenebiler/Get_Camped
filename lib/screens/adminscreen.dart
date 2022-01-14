@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../database/allmethods.dart';
 import '../database/allclasses.dart';
 import '../database/allvariables.dart';
 
@@ -90,7 +91,9 @@ class ManageUsersButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        await clearAllControllers();
+        searchedList = null;
         Navigator.pushNamed(context, '/mngusersscreen');
       },
       child: Container(
@@ -120,7 +123,9 @@ class ManageCampsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
+        await clearAllControllers();
+        searchedList = null;
         Navigator.pushNamed(context, '/mngcampsscreen');
       },
       child: Container(
@@ -150,8 +155,10 @@ class ManageRsvsButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {
-        // Navigator.pop(context);
+      onTap: () async {
+        await clearAllControllers();
+        searchedList = null;
+        // ROTAAA <==================
       },
       child: Container(
         alignment: Alignment.center,
