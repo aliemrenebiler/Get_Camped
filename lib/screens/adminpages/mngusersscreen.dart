@@ -36,7 +36,7 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: Column(
             children: [
-              SearchBarBox(notifyParent: refresh),
+              SearchUserBox(notifyParent: refresh),
               Row(
                 children: [
                   Expanded(
@@ -47,16 +47,33 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
                   )
                 ],
               ),
-              Expanded(
-                child: ListView(
-                  physics: const BouncingScrollPhysics(),
-                  children: [
-                    UserBox(user: currentUser),
-                    UserBox(user: currentUser),
-                    UserBox(user: currentUser),
-                  ],
-                ),
-              ),
+              (searchedList != null)
+                  ? Expanded(
+                      child: ListView(
+                        physics: const BouncingScrollPhysics(),
+                        children: [
+                          for (var x in searchedList)
+                            UserBox(
+                              ssn: x[0] ?? '--',
+                              name: x[1] ?? '--',
+                              surname: x[2] ?? '--',
+                              phone: x[3] ?? '--',
+                              hesCode: x[4] ?? '--',
+                              notifyParent: refresh,
+                            ),
+                        ],
+                      ),
+                    )
+                  : Container(
+                      child: const Text(
+                        'Gösterilecek bir veri yok.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontSize: 25,
+                        ),
+                      ),
+                    ),
             ],
           ),
         ),
@@ -65,9 +82,9 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
   }
 }
 
-class SearchBarBox extends StatelessWidget {
+class SearchUserBox extends StatelessWidget {
   final Function() notifyParent;
-  SearchBarBox({Key? key, required this.notifyParent}) : super(key: key);
+  SearchUserBox({Key? key, required this.notifyParent}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -89,8 +106,9 @@ class SearchBarBox extends StatelessWidget {
         Container(
           child: FittedBox(
             child: InkWell(
-              onTap: () {
-                // ARAMA YAP  <=================
+              onTap: () async {
+                getSingleUser();
+                notifyParent();
               },
               child: Container(
                 alignment: Alignment.center,
@@ -119,8 +137,21 @@ class SearchBarBox extends StatelessWidget {
 }
 
 class UserBox extends StatelessWidget {
-  final User user;
-  const UserBox({Key? key, required this.user}) : super(key: key);
+  final String ssn;
+  final String name;
+  final String surname;
+  final String phone;
+  final String hesCode;
+  final Function() notifyParent;
+  const UserBox({
+    Key? key,
+    required this.ssn,
+    required this.name,
+    required this.surname,
+    required this.phone,
+    required this.hesCode,
+    required this.notifyParent,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +167,7 @@ class UserBox extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'TC: ' + user.ssn!,
+                  'TC: ' + ssn,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white60,
@@ -144,7 +175,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user.name! + ' ' + user.surname!,
+                  name + ' ' + surname,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     color: Colors.white,
@@ -169,7 +200,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user.phone!,
+                  phone,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Colors.white,
@@ -194,7 +225,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  user.hesCode!,
+                  hesCode,
                   textAlign: TextAlign.left,
                   style: const TextStyle(
                     color: Colors.white,
@@ -258,7 +289,8 @@ class UserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: const DeleteUserBox(),
+                            content: DeleteUserBox(
+                                ssn: ssn, notifyParent: notifyParent),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -338,6 +370,7 @@ class AddUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Container(
                 child: TextFormField(
+                  controller: ssnController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "TC Kimlik No",
@@ -350,6 +383,7 @@ class AddUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Container(
                 child: TextFormField(
+                  controller: nameController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "İsim",
@@ -362,6 +396,7 @@ class AddUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Container(
                 child: TextFormField(
+                  controller: surnameController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "Soyisim",
@@ -374,6 +409,7 @@ class AddUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Container(
                 child: TextFormField(
+                  controller: phoneController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "Telefon",
@@ -386,6 +422,7 @@ class AddUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               child: Container(
                 child: TextFormField(
+                  controller: hesCodeController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "HES Kodu",
@@ -395,14 +432,17 @@ class AddUserBox extends StatelessWidget {
             ),
             Container(
               child: InkWell(
-                onTap: () {
-                  // KULLANICI EKLE  <=================
+                onTap: () async {
                   Navigator.pop(context);
+                  int control = await addNewUser();
+                  await clearAllControllers();
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        content: const UserAddedBox(),
+                        content: UserAddedBox(
+                          control: control,
+                        ),
                         contentPadding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -696,7 +736,10 @@ class EditUserBox extends StatelessWidget {
 }
 
 class DeleteUserBox extends StatelessWidget {
-  const DeleteUserBox({Key? key}) : super(key: key);
+  final String ssn;
+  final Function() notifyParent;
+  const DeleteUserBox({Key? key, required this.ssn, required this.notifyParent})
+      : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -753,8 +796,22 @@ class DeleteUserBox extends StatelessWidget {
                 ),
                 Expanded(
                   child: InkWell(
-                    onTap: () {
-                      // KULLANICIYI SİL <=====================
+                    onTap: () async {
+                      await deleteUser(ssn);
+                      Navigator.pop(context);
+                      notifyParent();
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            content: UserDeletedBox(),
+                            contentPadding: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          );
+                        },
+                      );
                     },
                     child: Container(
                       alignment: Alignment.center,
@@ -786,7 +843,8 @@ class DeleteUserBox extends StatelessWidget {
 
 // INFORMATION BOXES
 class UserAddedBox extends StatelessWidget {
-  const UserAddedBox({Key? key}) : super(key: key);
+  final int control;
+  const UserAddedBox({Key? key, required this.control}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -803,10 +861,14 @@ class UserAddedBox extends StatelessWidget {
             Container(
               margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
-              child: const Text(
-                'Kullanıcı başarıyla eklendi.',
+              child: Text(
+                (control == 1)
+                    ? 'Kullanıcı başarıyla eklendi.'
+                    : (control == 0)
+                        ? 'Bilgiler boş bırakılamaz.'
+                        : 'Bu kullanıcı zaten var.',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
                   fontSize: 25,
@@ -901,6 +963,64 @@ class UserUpdatedBox extends StatelessWidget {
   }
 }
 
+class UserDeletedBox extends StatelessWidget {
+  const UserDeletedBox({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              alignment: Alignment.center,
+              child: const Text(
+                'Kullanıcı başarıyla silindi.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: 200,
+                margin: const EdgeInsets.all(5),
+                child: const Text(
+                  'Tamam',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                  ),
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 // BUTTONS
 class ListAllButton extends StatelessWidget {
   final Function() notifyParent;
@@ -911,17 +1031,7 @@ class ListAllButton extends StatelessWidget {
     return Container(
       child: InkWell(
         onTap: () async {
-          //await connection.open();
-
-          //searchedList = await connection.query('''
-          //SELECT * FROM users
-          //''');
-
-          //row = searchedList[0];
-
-          //print('YAZI');
-          //await connection.close();
-
+          getAllUsers();
           notifyParent();
         },
         child: Container(

@@ -43,6 +43,7 @@ var hesCodeController = TextEditingController();
 
 var campIdController = TextEditingController();
 var cityController = TextEditingController();
+var capacityController = TextEditingController();
 var dailyPriceController = TextEditingController();
 var tentController = TextEditingController();
 var tentPriceController = TextEditingController();
