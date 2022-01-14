@@ -10,7 +10,7 @@ class MngCampsScreen extends StatefulWidget {
 }
 
 class _MngCampsScreenState extends State<MngCampsScreen> {
-  refresh() {
+  refreshMngCampsScreen() {
     setState(() {});
   }
 
@@ -35,6 +35,7 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
           child: Column(
             children: [
               SearchCampsBarBox(),
+              CampConstBarBox(),
               SingleChildScrollView(
                 physics: const BouncingScrollPhysics(),
                 child: Column(
@@ -55,7 +56,7 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
 }
 
 class SearchCampsBarBox extends StatelessWidget {
-  const SearchCampsBarBox({Key? key}) : super(key: key);
+  SearchCampsBarBox({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -64,10 +65,10 @@ class SearchCampsBarBox extends StatelessWidget {
           child: Container(
             margin: const EdgeInsets.only(left: 8, right: 5),
             child: TextFormField(
-              controller: ssnController,
+              controller: campIdController,
               decoration: const InputDecoration(
                 border: UnderlineInputBorder(),
-                labelText: "TC Kimlik No",
+                labelText: "Kamp ID'si",
               ),
             ),
           ),
@@ -97,15 +98,15 @@ class SearchCampsBarBox extends StatelessWidget {
         ),
         InkWell(
           onTap: () {
-            // TÜM KULLANICILARI LİSTELE  <=================
+            // TÜM KAMP ALANLARINI LİSTELE  <=================
           },
           child: Container(
             alignment: Alignment.center,
             height: 50,
             margin: const EdgeInsets.all(5),
-            constraints: const BoxConstraints(minWidth: 250),
+            constraints: const BoxConstraints(minWidth: 290),
             child: const Text(
-              'Tüm Kullanıcıları Listele',
+              'Tüm Kamp Alanlarını Listele',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,
@@ -137,9 +138,121 @@ class SearchCampsBarBox extends StatelessWidget {
             alignment: Alignment.center,
             height: 50,
             margin: const EdgeInsets.all(5),
-            constraints: const BoxConstraints(minWidth: 160),
+            constraints: const BoxConstraints(minWidth: 190),
             child: const Text(
-              'Kullanıcı Ekle',
+              'Kamp Alanı Ekle',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+            decoration: const BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CampConstBarBox extends StatelessWidget {
+  CampConstBarBox({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        DropdownButton<String>(
+          hint: const Text('Şehir'),
+          icon: const Icon(Icons.arrow_downward),
+          elevation: 16,
+          style: const TextStyle(color: Colors.deepPurple),
+          underline: Container(
+            height: 2,
+            color: Colors.deepPurpleAccent,
+          ),
+          onChanged: (String? newValue) {
+            // dropdownValue = newValue!; <==========
+          },
+          items: <String>['Hepsi', '1', '2', '3'].map<DropdownMenuItem<String>>(
+            (String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            },
+          ).toList(),
+        ),
+        InkWell(
+          onTap: () {
+            // ARAMA YAP  <=================
+          },
+          child: Container(
+            alignment: Alignment.center,
+            height: 50,
+            margin: const EdgeInsets.all(5),
+            constraints: const BoxConstraints(minWidth: 70),
+            child: const Text(
+              'Ara',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+            decoration: const BoxDecoration(
+              color: Colors.red,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            // TÜM KAMP ALANLARINI LİSTELE  <=================
+          },
+          child: Container(
+            alignment: Alignment.center,
+            height: 50,
+            margin: const EdgeInsets.all(5),
+            constraints: const BoxConstraints(minWidth: 290),
+            child: const Text(
+              'Tüm Kamp Alanlarını Listele',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+              ),
+            ),
+            decoration: const BoxDecoration(
+              color: Colors.blueAccent,
+              borderRadius: BorderRadius.all(Radius.circular(5)),
+            ),
+          ),
+        ),
+        InkWell(
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  content: AddCampBox(),
+                  contentPadding: EdgeInsets.zero,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                );
+              },
+            );
+          },
+          child: Container(
+            alignment: Alignment.center,
+            height: 50,
+            margin: const EdgeInsets.all(5),
+            constraints: const BoxConstraints(minWidth: 190),
+            child: const Text(
+              'Kamp Alanı Ekle',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.white,

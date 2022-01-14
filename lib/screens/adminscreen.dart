@@ -49,7 +49,7 @@ class AdminInfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(5, 50, 5, 50),
+      margin: const EdgeInsets.fromLTRB(5, 20, 5, 20),
       child: (user.name != null && user.surname != null)
           ? Column(
               children: [
@@ -97,7 +97,6 @@ class ManageUsersButton extends StatelessWidget {
         alignment: Alignment.center,
         height: 50,
         margin: const EdgeInsets.all(5),
-        constraints: const BoxConstraints(maxWidth: 500),
         child: const Text(
           'Kullanıcıları Yönet',
           textAlign: TextAlign.center,
@@ -127,7 +126,6 @@ class ManageCampsButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         height: 50,
-        constraints: const BoxConstraints(maxWidth: 500),
         margin: const EdgeInsets.all(5),
         child: const Text(
           'Kamp Alanlarını Yönet',
@@ -158,7 +156,6 @@ class ManageRsvsButton extends StatelessWidget {
       child: Container(
         alignment: Alignment.center,
         height: 50,
-        constraints: const BoxConstraints(maxWidth: 500),
         margin: const EdgeInsets.all(5),
         child: const Text(
           'Rezervasyonları Yönet',

@@ -1,6 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'screens/allscreens.dart';
+import 'package:postgres/postgres.dart';
+
+import 'screens/loginscreen.dart';
+import 'screens/adminscreen.dart';
+import 'screens/userscreen.dart';
+
+// Admin Pages
+import 'screens/adminpages/mngcampsscreen.dart';
+import 'screens/adminpages/mngrsvsscreen.dart';
+import 'screens/adminpages/mngusersscreen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

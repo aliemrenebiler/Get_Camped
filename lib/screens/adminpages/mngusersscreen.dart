@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:postgres/postgres.dart';
+import 'package:get_camped/database/allmethods.dart';
 import '../../database/allclasses.dart';
 import '../../database/allvariables.dart';
 
@@ -34,17 +36,15 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              SearchBarBox(),
+              SearchBarBox(notifyParent: refresh),
+              ListBarBox(
+                notifyParent: refresh,
+              ),
               SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
+                physics: BouncingScrollPhysics(),
                 child: Column(
-                  children: [
-                    //for (var x in searchedList) {},
-                    ShowUserBox(
-                      user: currentUser,
+                    // TÜM KULLANICILAR
                     ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -55,7 +55,8 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
 }
 
 class SearchBarBox extends StatelessWidget {
-  const SearchBarBox({Key? key}) : super(key: key);
+  final Function() notifyParent;
+  SearchBarBox({Key? key, required this.notifyParent}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -95,9 +96,32 @@ class SearchBarBox extends StatelessWidget {
             ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class ListBarBox extends StatelessWidget {
+  final Function() notifyParent;
+  const ListBarBox({Key? key, required this.notifyParent}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
         InkWell(
-          onTap: () {
-            // TÜM KULLANICILARI LİSTELE  <=================
+          onTap: () async {
+            await connection.open();
+
+            searchedList = await connection.query('''
+            SELECT * FROM users
+            ''');
+
+            row = searchedList[0];
+
+            print('YAZI');
+            await connection.close();
+
+            notifyParent();
           },
           child: Container(
             alignment: Alignment.center,

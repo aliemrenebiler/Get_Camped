@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:postgres/postgres.dart';
 import 'allclasses.dart';
 
 // BURAYA TÜM DEĞİŞKENLERİ YAZABİLİRİZ
 
 var searchedList;
+var row;
+
+List<User> userList = [];
+
+var connection = PostgreSQLConnection(
+  "localhost",
+  5432,
+  "getCamped_db",
+  username: "postgres",
+  password: "7756",
+);
 
 var currentUser = User(
   ssn: '1234567890',
