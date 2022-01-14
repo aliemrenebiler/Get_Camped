@@ -3,14 +3,14 @@ import '../../database/allmethods.dart';
 import '../../database/allvariables.dart';
 import '../../database/theme.dart';
 
-class MngUsersScreen extends StatefulWidget {
-  const MngUsersScreen({Key? key}) : super(key: key);
+class UsersRsvScreen extends StatefulWidget {
+  const UsersRsvScreen({Key? key}) : super(key: key);
 
   @override
-  State<MngUsersScreen> createState() => _MngUsersScreenState();
+  State<UsersRsvScreen> createState() => _UsersRsvScreenState();
 }
 
-class _MngUsersScreenState extends State<MngUsersScreen> {
+class _UsersRsvScreenState extends State<UsersRsvScreen> {
   refresh() {
     setState(() {});
   }
@@ -37,11 +37,11 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
             SearchUserBox(notifyParent: refresh),
             Row(
               children: [
+                // Expanded(
+                //   child: ListAllButton(notifyParent: refresh),
+                // ),
                 Expanded(
-                  child: ListAllButton(notifyParent: refresh),
-                ),
-                Expanded(
-                  child: AddUserButton(notifyParent: refresh),
+                  child: AddRsvButton(notifyParent: refresh),
                 )
               ],
             ),
@@ -57,7 +57,6 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
                             surname: x[2] ?? '--',
                             phone: x[3] ?? '--',
                             hesCode: x[4] ?? '--',
-                            isAdmin: x[5],
                             notifyParent: refresh,
                           ),
                       ],
@@ -91,23 +90,11 @@ class SearchUserBox extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Expanded(
-          child: Container(
-            margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-            child: TextFormField(
-              controller: ssnController,
-              decoration: const InputDecoration(
-                border: UnderlineInputBorder(),
-                labelText: "TC Kimlik No",
-              ),
-            ),
-          ),
-        ),
         Container(
           child: FittedBox(
             child: InkWell(
               onTap: () async {
-                await getSingleUser(ssnController.text);
+                await getSingleUser(currentUser.ssn!);
                 await clearAllControllers();
                 notifyParent();
               },
@@ -116,7 +103,7 @@ class SearchUserBox extends StatelessWidget {
                 width: 70,
                 height: 50,
                 child: Text(
-                  'Ara',
+                  'Rezervasyon Görüntüle',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -137,43 +124,9 @@ class SearchUserBox extends StatelessWidget {
   }
 }
 
-class ListAllButton extends StatelessWidget {
+class AddRsvButton extends StatelessWidget {
   final Function() notifyParent;
-  const ListAllButton({Key? key, required this.notifyParent}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      child: InkWell(
-        onTap: () async {
-          await getAllUsers();
-          notifyParent();
-        },
-        child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.blueAccent,
-            borderRadius: BorderRadius.all(Radius.circular(5)),
-          ),
-          alignment: Alignment.center,
-          height: 50,
-          child: Text(
-            'Tüm Kullanıcılar',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: fontSizeM,
-            ),
-          ),
-        ),
-      ),
-      margin: const EdgeInsets.all(5),
-    );
-  }
-}
-
-class AddUserButton extends StatelessWidget {
-  final Function() notifyParent;
-  const AddUserButton({Key? key, required this.notifyParent}) : super(key: key);
+  const AddRsvButton({Key? key, required this.notifyParent}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +137,7 @@ class AddUserButton extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                content: AddUserBox(notifyParent: notifyParent),
+                content: AddRsvBox(notifyParent: notifyParent),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -197,7 +150,7 @@ class AddUserButton extends StatelessWidget {
           alignment: Alignment.center,
           height: 50,
           child: Text(
-            'Kullanıcı Ekle',
+            'Rezervasyon Ekle',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -222,7 +175,6 @@ class UserBox extends StatelessWidget {
   final String surname;
   final String phone;
   final String hesCode;
-  final int isAdmin;
   final Function() notifyParent;
   const UserBox({
     Key? key,
@@ -231,7 +183,6 @@ class UserBox extends StatelessWidget {
     required this.surname,
     required this.phone,
     required this.hesCode,
-    required this.isAdmin,
     required this.notifyParent,
   }) : super(key: key);
 
@@ -320,60 +271,15 @@ class UserBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                margin: const EdgeInsets.all(5),
-                child: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: EditAdminBox(
-                            ssn: ssn,
-                            notifyParent: notifyParent,
-                          ),
-                          contentPadding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 50,
-                    width: 50,
-                    child: Text(
-                      (isAdmin == 0) ? '+' : '-',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: fontSizeL,
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: (isAdmin == 0) ? Colors.green : Colors.red,
-                      borderRadius: const BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(
-                        width: 2,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: Container(
-                  margin: const EdgeInsets.all(5),
                   child: InkWell(
                     onTap: () {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: EditUserBox(
+                            content: EditRsvBox(
                               ssn: ssn,
                               name: name,
                               surname: surname,
@@ -390,6 +296,7 @@ class UserBox extends StatelessWidget {
                       );
                     },
                     child: Container(
+                      margin: const EdgeInsets.all(5),
                       alignment: Alignment.center,
                       height: 50,
                       child: Text(
@@ -422,7 +329,7 @@ class UserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: DeleteUserBox(
+                            content: DeleteRsvBox(
                                 ssn: ssn, notifyParent: notifyParent),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
@@ -469,9 +376,9 @@ class UserBox extends StatelessWidget {
 }
 
 // FUNCTION BOXES
-class AddUserBox extends StatelessWidget {
+class AddRsvBox extends StatelessWidget {
   final Function() notifyParent;
-  const AddUserBox({Key? key, required this.notifyParent}) : super(key: key);
+  const AddRsvBox({Key? key, required this.notifyParent}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -492,7 +399,7 @@ class AddUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 child: Text(
-                  'Yeni Kullanıcı Bilgileri',
+                  'Yeni Rezervasyon Bilgileri',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -507,6 +414,7 @@ class AddUserBox extends StatelessWidget {
                 child: Container(
                   child: TextFormField(
                     controller: ssnController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: "TC Kimlik No",
@@ -522,7 +430,7 @@ class AddUserBox extends StatelessWidget {
                     controller: nameController,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "İsim",
+                      labelText: "Kamp Adı",
                     ),
                   ),
                 ),
@@ -533,9 +441,10 @@ class AddUserBox extends StatelessWidget {
                 child: Container(
                   child: TextFormField(
                     controller: surnameController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "Soyisim",
+                      labelText: "Başlangıç Tarihi (Gün.Ay.Yıl)",
                     ),
                   ),
                 ),
@@ -546,9 +455,10 @@ class AddUserBox extends StatelessWidget {
                 child: Container(
                   child: TextFormField(
                     controller: phoneController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "Telefon",
+                      labelText: "Rezervasyon Gün Sayısı",
                     ),
                   ),
                 ),
@@ -562,6 +472,19 @@ class AddUserBox extends StatelessWidget {
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
                       labelText: "HES Kodu",
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                alignment: Alignment.center,
+                margin: const EdgeInsets.all(10),
+                child: Container(
+                  child: TextFormField(
+                    controller: tentController,
+                    decoration: const InputDecoration(
+                      border: UnderlineInputBorder(),
+                      labelText: "Çadır istiyor musunuz?",
                     ),
                   ),
                 ),
@@ -617,14 +540,14 @@ class AddUserBox extends StatelessWidget {
   }
 }
 
-class EditUserBox extends StatelessWidget {
+class EditRsvBox extends StatelessWidget {
   final String ssn;
   final String name;
   final String surname;
   final String phone;
   final String hesCode;
   final Function() notifyParent;
-  const EditUserBox({
+  const EditRsvBox({
     Key? key,
     required this.ssn,
     required this.name,
@@ -653,7 +576,7 @@ class EditUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 child: Text(
-                  'Yeni Kullanıcı Bilgileri',
+                  'Yeni Rezervasyon Bilgileri',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -815,7 +738,7 @@ class EditUserBox extends StatelessWidget {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        content: UserUpdatedBox(),
+                        content: RsvUpdatedBox(),
                         contentPadding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -851,120 +774,10 @@ class EditUserBox extends StatelessWidget {
   }
 }
 
-class EditAdminBox extends StatelessWidget {
+class DeleteRsvBox extends StatelessWidget {
   final String ssn;
   final Function() notifyParent;
-  const EditAdminBox({
-    Key? key,
-    required this.ssn,
-    required this.notifyParent,
-  }) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return FittedBox(
-      child: Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.all(20),
-        width: MediaQuery.of(context).size.width * 2 / 3,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(10),
-              alignment: Alignment.center,
-              child: Text(
-                'Bu kullanıcının yetkisini değiştirmek istediğinize emin misiniz?',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontSize: fontSizeM,
-                ),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      margin: const EdgeInsets.all(5),
-                      child: Text(
-                        'Hayır',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeM,
-                        ),
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      await deleteUser(ssn);
-                      Navigator.pop(context);
-                      searchedList = null;
-                      notifyParent();
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: UserDeletedBox(),
-                            contentPadding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      margin: const EdgeInsets.all(5),
-                      child: Text(
-                        'Evet',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeM,
-                        ),
-                      ),
-                      decoration: const BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.all(Radius.circular(5)),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DeleteUserBox extends StatelessWidget {
-  final String ssn;
-  final Function() notifyParent;
-  const DeleteUserBox({Key? key, required this.ssn, required this.notifyParent})
+  const DeleteRsvBox({Key? key, required this.ssn, required this.notifyParent})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -984,7 +797,7 @@ class DeleteUserBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               child: Text(
-                'Bu kullanıcıyı silmek istediğinize emin misiniz?',
+                'Bu rezervasyonu silmek istediğinize emin misiniz?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -1031,7 +844,7 @@ class DeleteUserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: UserDeletedBox(),
+                            content: DeletedRsvBox(),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -1090,10 +903,10 @@ class UserAddedBox extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 (control == 1)
-                    ? 'Kullanıcı başarıyla eklendi.'
+                    ? 'Rezervasyon başarıyla eklendi.'
                     : (control == 0)
                         ? 'Bilgiler boş bırakılamaz.'
-                        : 'Bu kullanıcı zaten var.',
+                        : 'Bu rezervasyon zaten var.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -1132,8 +945,8 @@ class UserAddedBox extends StatelessWidget {
   }
 }
 
-class UserUpdatedBox extends StatelessWidget {
-  const UserUpdatedBox({Key? key}) : super(key: key);
+class RsvUpdatedBox extends StatelessWidget {
+  const RsvUpdatedBox({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -1151,7 +964,7 @@ class UserUpdatedBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               child: Text(
-                'Kullanıcı bilgileri güncellendi.',
+                'Rezervasyon bilgileri güncellendi.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -1190,8 +1003,8 @@ class UserUpdatedBox extends StatelessWidget {
   }
 }
 
-class UserDeletedBox extends StatelessWidget {
-  const UserDeletedBox({Key? key}) : super(key: key);
+class DeletedRsvBox extends StatelessWidget {
+  const DeletedRsvBox({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -1209,7 +1022,7 @@ class UserDeletedBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               child: Text(
-                'Kullanıcı başarıyla silindi.',
+                'Rezervasyon başarıyla silindi.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

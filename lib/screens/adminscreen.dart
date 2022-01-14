@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import '../database/theme.dart';
 import '../database/allmethods.dart';
 import '../database/allclasses.dart';
 import '../database/allvariables.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    searchedList = null;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Admin Paneli',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: fontSizeL,
           ),
         ),
         backgroundColor: Colors.grey,
@@ -54,30 +55,30 @@ class AdminInfoBox extends StatelessWidget {
       child: (user.name != null && user.surname != null)
           ? Column(
               children: [
-                const Text(
+                Text(
                   'Hoşgeldin',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.grey,
-                    fontSize: 25,
+                    fontSize: fontSizeM,
                   ),
                 ),
                 Text(
                   user.name! + ' ' + user.surname!,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.black,
-                    fontSize: 25,
+                    fontSize: fontSizeL,
                   ),
                 ),
               ],
             )
-          : const Text(
+          : Text(
               '(İsim Mevcut Değil)',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: Colors.grey,
-                fontSize: 25,
+                fontSize: fontSizeL,
               ),
             ),
     );
@@ -100,12 +101,12 @@ class ManageUsersButton extends StatelessWidget {
         alignment: Alignment.center,
         height: 50,
         margin: const EdgeInsets.all(5),
-        child: const Text(
+        child: Text(
           'Kullanıcıları Yönet',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: fontSizeM,
           ),
         ),
         decoration: const BoxDecoration(
@@ -132,12 +133,12 @@ class ManageCampsButton extends StatelessWidget {
         alignment: Alignment.center,
         height: 50,
         margin: const EdgeInsets.all(5),
-        child: const Text(
+        child: Text(
           'Kamp Alanlarını Yönet',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: fontSizeM,
           ),
         ),
         decoration: const BoxDecoration(
@@ -164,12 +165,12 @@ class ManageRsvsButton extends StatelessWidget {
         alignment: Alignment.center,
         height: 50,
         margin: const EdgeInsets.all(5),
-        child: const Text(
+        child: Text(
           'Rezervasyonları Yönet',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: fontSizeM,
           ),
         ),
         decoration: const BoxDecoration(

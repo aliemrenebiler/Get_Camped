@@ -37,6 +37,7 @@ class MyApp extends StatelessWidget {
         // admin panel routes
         '/mngusersscreen': (context) => const MngUsersScreen(),
         '/mngcampsscreen': (context) => const MngCampsScreen(),
+        '/mngrsvsscreen': (context) => const MngRsvsScreen(),
       },
     );
   }
