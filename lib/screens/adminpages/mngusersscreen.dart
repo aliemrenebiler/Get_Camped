@@ -525,6 +525,7 @@ class AddUserBox extends StatelessWidget {
                     Navigator.pop(context);
                     int control = await addNewUser();
                     await clearAllControllers();
+                    searchedList = null;
                     notifyParent();
                     showDialog(
                       context: context,
