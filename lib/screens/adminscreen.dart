@@ -35,7 +35,7 @@ class AdminScreen extends StatelessWidget {
               ),
               const ManageUsersButton(),
               const ManageCampsButton(),
-              const ManageRsvsButton(),
+              // const ManageRsvsButton(),
             ],
           ),
         ),

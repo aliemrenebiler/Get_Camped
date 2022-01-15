@@ -7,8 +7,8 @@ import 'screens/userscreen.dart';
 
 // Admin Pages
 import 'screens/adminpages/mngcampsscreen.dart';
-import 'screens/adminpages/mngrsvsscreen.dart';
 import 'screens/adminpages/mngusersscreen.dart';
+//import 'screens/adminpages/mngrsvsscreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         // admin panel routes
         '/mngusersscreen': (context) => const MngUsersScreen(),
         '/mngcampsscreen': (context) => const MngCampsScreen(),
-        '/mngrsvsscreen': (context) => const MngRsvsScreen(),
+        //'/mngrsvsscreen': (context) => const MngRsvsScreen(),
       },
     );
   }
