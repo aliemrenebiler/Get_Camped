@@ -9,6 +9,7 @@ class UserScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     searchedList = null;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: UsersRsvScreen(),
     );
   }

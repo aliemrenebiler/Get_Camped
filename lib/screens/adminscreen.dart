@@ -10,6 +10,7 @@ class AdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     searchedList = null;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: Text(

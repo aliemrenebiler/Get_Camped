@@ -18,6 +18,7 @@ class _MngRsvsScreenState extends State<MngRsvsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: Text(

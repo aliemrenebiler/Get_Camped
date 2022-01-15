@@ -22,7 +22,7 @@ class _UsersCampsScreenState extends State<UsersCampsScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
-          'Kamp Alanlarını Yönet',
+          'Kamp Alanlarını Görüntüle',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -35,7 +35,7 @@ class _UsersCampsScreenState extends State<UsersCampsScreen> {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: Column(
           children: [
-            SearchCampingBox(notifyParent: refresh),
+            SearchCampBox(notifyParent: refresh),
             // Row(
             //   children: [
             //     // Expanded(
@@ -82,44 +82,157 @@ class _UsersCampsScreenState extends State<UsersCampsScreen> {
 }
 
 // TOP BUTTONS AND SEARCH
-class SearchCampingBox extends StatelessWidget {
+class SearchCampBox extends StatefulWidget {
   final Function() notifyParent;
-  SearchCampingBox({Key? key, required this.notifyParent}) : super(key: key);
+  const SearchCampBox({Key? key, required this.notifyParent}) : super(key: key);
+
+  @override
+  State<SearchCampBox> createState() => _SearchCampBoxState();
+}
+
+class _SearchCampBoxState extends State<SearchCampBox> {
+  String tentExist = 'Yok';
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
+    return Column(
       children: [
-        Container(
-          child: FittedBox(
-            child: InkWell(
-              onTap: () async {
-                await getUserRsv(currentCamp.id!);
-                await clearAllControllers();
-                notifyParent();
-              },
+        Row(
+          children: [
+            Expanded(
+              flex: 1,
               child: Container(
-                alignment: Alignment.center,
-                width: 70,
-                height: 50,
-                child: Text(
-                  'Kamp Alanlarını Görüntüle',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fontSizeM,
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+                child: TextFormField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: "Kamp Adı",
                   ),
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
               ),
             ),
-          ),
-          margin: const EdgeInsets.all(5),
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+                child: TextFormField(
+                  controller: cityController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: "Şehir",
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
+        Row(
+          children: [
+            Expanded(
+              flex: 2,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(5, 25, 5, 0),
+                child: DropdownButton<String>(
+                  value: tentExist,
+                  elevation: 16,
+                  underline: Container(
+                    height: 1,
+                    color: Colors.grey,
+                  ),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      tentExist = newValue!;
+                    });
+                  },
+                  items: <String>['Var', 'Yok']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  controller: minPriceController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: "₺ En Az",
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  controller: maxPriceController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: "₺ En Çok",
+                  ),
+                ),
+              ),
+            ),
+          ],
+          // Çadır var mı yok mu?
+          // Fiyat Aralığı
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+                child: TextFormField(
+                  controller: idController,
+                  decoration: const InputDecoration(
+                    border: UnderlineInputBorder(),
+                    labelText: "Kamp ID",
+                  ),
+                ),
+              ),
+            ),
+            Container(
+              child: FittedBox(
+                child: InkWell(
+                  onTap: () async {
+                    await getSingleUser(ssnController.text);
+                    await clearAllControllers();
+                    widget.notifyParent();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: 70,
+                    height: 50,
+                    child: Text(
+                      'Ara',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: fontSizeM,
+                      ),
+                    ),
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.all(Radius.circular(5)),
+                    ),
+                  ),
+                ),
+              ),
+              margin: const EdgeInsets.all(5),
+            ),
+          ],
+        )
       ],
     );
   }

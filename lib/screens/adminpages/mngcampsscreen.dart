@@ -18,6 +18,7 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -34,14 +35,14 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: Column(
           children: [
-            SearchUserBox(notifyParent: refresh),
+            SearchCampBox(notifyParent: refresh),
             Row(
               children: [
                 Expanded(
                   child: ListAllButton(notifyParent: refresh),
                 ),
                 Expanded(
-                  child: AddUserButton(notifyParent: refresh),
+                  child: AddCampButton(notifyParent: refresh),
                 )
               ],
             ),
@@ -51,12 +52,13 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
                       physics: const BouncingScrollPhysics(),
                       children: [
                         for (var x in searchedList)
-                          UserBox(
-                            ssn: x[0] ?? '--',
+                          CampBox(
+                            id: x[0] ?? '--',
                             name: x[1] ?? '--',
-                            surname: x[2] ?? '--',
-                            phone: x[3] ?? '--',
-                            hesCode: x[4] ?? '--',
+                            city: x[2] ?? '--',
+                            dailyPrice: x[3] ?? '--',
+                            tent: x[4] ?? '--',
+                            capacity: x[5] ?? '--',
                             notifyParent: refresh,
                           ),
                       ],
@@ -81,157 +83,56 @@ class _MngCampsScreenState extends State<MngCampsScreen> {
 }
 
 // TOP BUTTONS AND SEARCH
-class SearchUserBox extends StatefulWidget {
+class SearchCampBox extends StatelessWidget {
   final Function() notifyParent;
-  const SearchUserBox({Key? key, required this.notifyParent}) : super(key: key);
-
-  @override
-  State<SearchUserBox> createState() => _SearchUserBoxState();
-}
-
-class _SearchUserBoxState extends State<SearchUserBox> {
-  String tentExist = 'Yok';
+  SearchCampBox({Key? key, required this.notifyParent}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-                child: TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Kamp Adı",
-                  ),
-                ),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
+            child: TextFormField(
+              controller: idController,
+              decoration: const InputDecoration(
+                border: UnderlineInputBorder(),
+                labelText: "Kamp ID",
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-                child: TextFormField(
-                  controller: cityController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Şehir",
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
-        Row(
-          children: [
-            Expanded(
-              flex: 2,
+        Container(
+          child: FittedBox(
+            child: InkWell(
+              onTap: () async {
+                await getSingleCamp(int.parse(idController.text));
+                await clearAllControllers();
+                notifyParent();
+              },
               child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 25, 5, 0),
-                child: DropdownButton<String>(
-                  value: tentExist,
-                  icon: const Icon(Icons.arrow_downward),
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.deepPurple),
-                  underline: Container(
-                    height: 1,
-                    color: Colors.grey,
+                alignment: Alignment.center,
+                width: 70,
+                height: 50,
+                child: Text(
+                  'Ara',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSizeM,
                   ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      tentExist = newValue!;
-                    });
-                  },
-                  items: <String>['Var', 'Yok']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value),
-                    );
-                  }).toList(),
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
                 ),
               ),
             ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-                child: TextFormField(
-                  controller: minPriceController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "₺ En Az",
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-                child: TextFormField(
-                  controller: maxPriceController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "₺ En Çok",
-                  ),
-                ),
-              ),
-            ),
-          ],
-          // Çadır var mı yok mu?
-          // Fiyat Aralığı
+          ),
+          margin: const EdgeInsets.all(5),
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(5, 5, 5, 8),
-                child: TextFormField(
-                  controller: idController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Kamp ID",
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              child: FittedBox(
-                child: InkWell(
-                  onTap: () async {
-                    await getSingleUser(ssnController.text);
-                    await clearAllControllers();
-                    widget.notifyParent();
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    width: 70,
-                    height: 50,
-                    child: Text(
-                      'Ara',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: fontSizeM,
-                      ),
-                    ),
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(Radius.circular(5)),
-                    ),
-                  ),
-                ),
-              ),
-              margin: const EdgeInsets.all(5),
-            ),
-          ],
-        )
       ],
     );
   }
@@ -246,7 +147,7 @@ class ListAllButton extends StatelessWidget {
     return Container(
       child: InkWell(
         onTap: () async {
-          await getAllUsers();
+          await getAllCamps();
           notifyParent();
         },
         child: Container(
@@ -257,7 +158,7 @@ class ListAllButton extends StatelessWidget {
           alignment: Alignment.center,
           height: 50,
           child: Text(
-            'Tüm Kullanıcılar',
+            'Tüm Kamplar',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -271,9 +172,9 @@ class ListAllButton extends StatelessWidget {
   }
 }
 
-class AddUserButton extends StatelessWidget {
+class AddCampButton extends StatelessWidget {
   final Function() notifyParent;
-  const AddUserButton({Key? key, required this.notifyParent}) : super(key: key);
+  const AddCampButton({Key? key, required this.notifyParent}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -284,7 +185,7 @@ class AddUserButton extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                content: AddUserBox(notifyParent: notifyParent),
+                content: AddCampBox(notifyParent: notifyParent),
                 contentPadding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
@@ -297,7 +198,7 @@ class AddUserButton extends StatelessWidget {
           alignment: Alignment.center,
           height: 50,
           child: Text(
-            'Kullanıcı Ekle',
+            'Kamp Ekle',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.white,
@@ -315,21 +216,23 @@ class AddUserButton extends StatelessWidget {
   }
 }
 
-// REPEATED USER BOX
-class UserBox extends StatelessWidget {
-  final String ssn;
+// REPEATED Camp BOX
+class CampBox extends StatelessWidget {
+  final int id;
   final String name;
-  final String surname;
-  final String phone;
-  final String hesCode;
+  final String city;
+  final int capacity;
+  final int dailyPrice;
+  final bool tent;
   final Function() notifyParent;
-  const UserBox({
+  const CampBox({
     Key? key,
-    required this.ssn,
+    required this.id,
     required this.name,
-    required this.surname,
-    required this.phone,
-    required this.hesCode,
+    required this.city,
+    required this.capacity,
+    required this.dailyPrice,
+    required this.tent,
     required this.notifyParent,
   }) : super(key: key);
 
@@ -347,7 +250,7 @@ class UserBox extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'TC: ' + ssn,
+                  'ID: ' + id.toString(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white60,
@@ -355,7 +258,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  name + ' ' + surname,
+                  name + ' - ' + city,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -372,7 +275,7 @@ class UserBox extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Telefon: ',
+                  'Kapasite: ',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white60,
@@ -380,7 +283,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  phone,
+                  capacity.toString(),
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white,
@@ -397,7 +300,7 @@ class UserBox extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'HES Kodu: ',
+                  'Günlük Ücret: ',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white60,
@@ -405,7 +308,32 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  hesCode,
+                  dailyPrice.toString(),
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSizeM,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.all(5),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Çadır: ',
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    color: Colors.white60,
+                    fontSize: fontSizeM,
+                  ),
+                ),
+                Text(
+                  (tent) ? 'Var' : 'Yok',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white,
@@ -426,12 +354,11 @@ class UserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: EditUserBox(
-                              ssn: ssn,
+                            content: EditCampBox(
+                              id: id,
                               name: name,
-                              surname: surname,
-                              phone: phone,
-                              hesCode: hesCode,
+                              tent: tent,
+                              dailyPrice: dailyPrice,
                               notifyParent: notifyParent,
                             ),
                             contentPadding: EdgeInsets.zero,
@@ -476,8 +403,8 @@ class UserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: DeleteUserBox(
-                                ssn: ssn, notifyParent: notifyParent),
+                            content: DeleteCampBox(
+                                id: id, notifyParent: notifyParent),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -523,9 +450,16 @@ class UserBox extends StatelessWidget {
 }
 
 // FUNCTION BOXES
-class AddUserBox extends StatelessWidget {
+class AddCampBox extends StatefulWidget {
   final Function() notifyParent;
-  const AddUserBox({Key? key, required this.notifyParent}) : super(key: key);
+  const AddCampBox({Key? key, required this.notifyParent}) : super(key: key);
+
+  @override
+  State<AddCampBox> createState() => _AddCampBoxState();
+}
+
+class _AddCampBoxState extends State<AddCampBox> {
+  String tentExist = 'Yok';
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -546,25 +480,12 @@ class AddUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 child: Text(
-                  'Yeni Kullanıcı Bilgileri',
+                  'Yeni Kamp Bilgileri',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: fontSizeM,
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(10),
-                child: Container(
-                  child: TextFormField(
-                    controller: ssnController,
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: "TC Kimlik No",
-                    ),
                   ),
                 ),
               ),
@@ -586,10 +507,10 @@ class AddUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: surnameController,
+                    controller: cityController,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "Soyisim",
+                      labelText: "Şehir",
                     ),
                   ),
                 ),
@@ -599,23 +520,62 @@ class AddUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: phoneController,
+                    keyboardType: TextInputType.number,
+                    controller: dailyPriceController,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "Telefon",
+                      labelText: "Günlük Ücret",
                     ),
                   ),
                 ),
+              ),
+              Row(
+                children: [
+                  Text(
+                    'Çadır var mı? ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: fontSizeS,
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: DropdownButton<String>(
+                        value: tentExist,
+                        elevation: 16,
+                        underline: Container(
+                          height: 1,
+                          color: Colors.grey,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            tentExist = newValue!;
+                          });
+                        },
+                        items: <String>['Var', 'Yok']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 alignment: Alignment.center,
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: hesCodeController,
+                    keyboardType: TextInputType.number,
+                    controller: capacityController,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "HES Kodu",
+                      labelText: "Kapasite",
                     ),
                   ),
                 ),
@@ -624,15 +584,16 @@ class AddUserBox extends StatelessWidget {
                 child: InkWell(
                   onTap: () async {
                     Navigator.pop(context);
-                    int control = await addNewUser();
+                    bool tentValue = (tentExist == 'Var') ? true : false;
+                    int control = await addNewCamp(tentValue);
                     await clearAllControllers();
                     searchedList = null;
-                    notifyParent();
+                    widget.notifyParent();
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          content: UserAddedBox(
+                          content: CampAddedBox(
                             control: control,
                           ),
                           contentPadding: EdgeInsets.zero,
@@ -671,22 +632,28 @@ class AddUserBox extends StatelessWidget {
   }
 }
 
-class EditUserBox extends StatelessWidget {
-  final String ssn;
+class EditCampBox extends StatefulWidget {
+  final int id;
   final String name;
-  final String surname;
-  final String phone;
-  final String hesCode;
+  final bool tent;
+  final int dailyPrice;
   final Function() notifyParent;
-  const EditUserBox({
+  const EditCampBox({
     Key? key,
-    required this.ssn,
+    required this.id,
     required this.name,
-    required this.surname,
-    required this.phone,
-    required this.hesCode,
+    required this.tent,
+    required this.dailyPrice,
     required this.notifyParent,
   }) : super(key: key);
+
+  @override
+  State<EditCampBox> createState() => _EditCampBoxState();
+}
+
+class _EditCampBoxState extends State<EditCampBox> {
+  String tentExist = 'Yok';
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -707,7 +674,7 @@ class EditUserBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 alignment: Alignment.center,
                 child: Text(
-                  'Yeni Kullanıcı Bilgileri',
+                  'Yeni Kamp Bilgileri',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
@@ -732,7 +699,7 @@ class EditUserBox extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      name,
+                      widget.name,
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.black,
@@ -745,6 +712,7 @@ class EditUserBox extends StatelessWidget {
               Container(
                 margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
                 child: TextFormField(
+                  keyboardType: TextInputType.number,
                   controller: nameController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -760,7 +728,7 @@ class EditUserBox extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Şuanki Soyisim: ',
+                      'Şuanki Çadır Durumu: ',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.black54,
@@ -768,7 +736,7 @@ class EditUserBox extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      surname,
+                      (widget.tent) ? 'Var' : 'Yok',
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.black,
@@ -778,15 +746,42 @@ class EditUserBox extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: surnameController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni Soyisim",
+              Row(
+                children: [
+                  Text(
+                    'Çadır var mı? ',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: fontSizeS,
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(10),
+                      child: DropdownButton<String>(
+                        value: tentExist,
+                        elevation: 16,
+                        underline: Container(
+                          height: 1,
+                          color: Colors.grey,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            tentExist = newValue!;
+                          });
+                        },
+                        items: <String>['Var', 'Yok']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 alignment: Alignment.centerLeft,
@@ -796,7 +791,7 @@ class EditUserBox extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     const Text(
-                      'Şuanki Telefon: ',
+                      'Şuanki Günlük Ücret: ',
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         color: Colors.black54,
@@ -804,7 +799,7 @@ class EditUserBox extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      phone,
+                      widget.dailyPrice.toString(),
                       textAlign: TextAlign.left,
                       style: const TextStyle(
                         color: Colors.black,
@@ -820,56 +815,21 @@ class EditUserBox extends StatelessWidget {
                   controller: phoneController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
-                    labelText: "Yeni Telefon",
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Şuanki HES Kodu: ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      hesCode,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: hesCodeController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni HES Kodu",
+                    labelText: "Yeni Günlük Ücret",
                   ),
                 ),
               ),
               InkWell(
                 onTap: () {
-                  updateUser(ssn);
+                  bool tentValue = (tentExist == 'Var') ? true : false;
+                  updateCamp(widget.id, tentValue);
                   Navigator.pop(context);
-                  notifyParent();
+                  widget.notifyParent();
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        content: UserUpdatedBox(),
+                        content: CampUpdatedBox(),
                         contentPadding: EdgeInsets.zero,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -905,10 +865,10 @@ class EditUserBox extends StatelessWidget {
   }
 }
 
-class DeleteUserBox extends StatelessWidget {
-  final String ssn;
+class DeleteCampBox extends StatelessWidget {
+  final int id;
   final Function() notifyParent;
-  const DeleteUserBox({Key? key, required this.ssn, required this.notifyParent})
+  const DeleteCampBox({Key? key, required this.id, required this.notifyParent})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -967,7 +927,7 @@ class DeleteUserBox extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      await deleteUser(ssn);
+                      await deleteCamp(id);
                       Navigator.pop(context);
                       searchedList = null;
                       notifyParent();
@@ -975,7 +935,7 @@ class DeleteUserBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: UserDeletedBox(),
+                            content: CampDeletedBox(),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -1013,9 +973,9 @@ class DeleteUserBox extends StatelessWidget {
 }
 
 // INFORMATION BOXES
-class UserAddedBox extends StatelessWidget {
+class CampAddedBox extends StatelessWidget {
   final int control;
-  const UserAddedBox({Key? key, required this.control}) : super(key: key);
+  const CampAddedBox({Key? key, required this.control}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -1034,10 +994,10 @@ class UserAddedBox extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 (control == 1)
-                    ? 'Kullanıcı başarıyla eklendi.'
+                    ? 'Kamp başarıyla eklendi.'
                     : (control == 0)
                         ? 'Bilgiler boş bırakılamaz.'
-                        : 'Bu kullanıcı zaten var.',
+                        : 'Bu kamp zaten var.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
@@ -1076,8 +1036,8 @@ class UserAddedBox extends StatelessWidget {
   }
 }
 
-class UserUpdatedBox extends StatelessWidget {
-  const UserUpdatedBox({Key? key}) : super(key: key);
+class CampUpdatedBox extends StatelessWidget {
+  const CampUpdatedBox({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(
@@ -1134,8 +1094,8 @@ class UserUpdatedBox extends StatelessWidget {
   }
 }
 
-class UserDeletedBox extends StatelessWidget {
-  const UserDeletedBox({Key? key}) : super(key: key);
+class CampDeletedBox extends StatelessWidget {
+  const CampDeletedBox({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(

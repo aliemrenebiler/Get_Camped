@@ -18,6 +18,7 @@ class _MngUsersScreenState extends State<MngUsersScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         title: Text(
@@ -320,50 +321,53 @@ class UserBox extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                margin: const EdgeInsets.all(5),
-                child: InkWell(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          content: EditAdminBox(
-                            ssn: ssn,
-                            notifyParent: notifyParent,
+              (currentUser.ssn != ssn)
+                  ? Container(
+                      margin: const EdgeInsets.all(5),
+                      child: InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: EditAdminBox(
+                                  ssn: ssn,
+                                  notifyParent: notifyParent,
+                                ),
+                                contentPadding: EdgeInsets.zero,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              );
+                            },
+                          );
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          height: 50,
+                          width: 50,
+                          child: Text(
+                            (isAdmin == 0) ? '+' : '-',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              fontSize: fontSizeL,
+                            ),
                           ),
-                          contentPadding: EdgeInsets.zero,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                          decoration: BoxDecoration(
+                            color: (isAdmin == 0) ? Colors.green : Colors.red,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(5)),
+                            border: Border.all(
+                              width: 2,
+                              color: Colors.white,
+                            ),
                           ),
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 50,
-                    width: 50,
-                    child: Text(
-                      (isAdmin == 0) ? '+' : '-',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: fontSizeL,
+                        ),
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: (isAdmin == 0) ? Colors.green : Colors.red,
-                      borderRadius: const BorderRadius.all(Radius.circular(5)),
-                      border: Border.all(
-                        width: 2,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                    )
+                  : Container(),
               Expanded(
                 child: Container(
                   margin: const EdgeInsets.all(5),
@@ -413,49 +417,51 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
               ),
-              Expanded(
-                child: Container(
-                  margin: const EdgeInsets.all(5),
-                  child: InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: DeleteUserBox(
-                                ssn: ssn, notifyParent: notifyParent),
-                            contentPadding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+              (currentUser.ssn != ssn)
+                  ? Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.all(5),
+                        child: InkWell(
+                          onTap: () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  content: DeleteUserBox(
+                                      ssn: ssn, notifyParent: notifyParent),
+                                  contentPadding: EdgeInsets.zero,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            height: 50,
+                            child: Text(
+                              'Sil',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: fontSizeM,
+                              ),
                             ),
-                          );
-                        },
-                      );
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      child: Text(
-                        'Sil',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeM,
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(5)),
+                              border: Border.all(
+                                width: 2,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
-                        border: Border.all(
-                          width: 2,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
+                    )
+                  : Container(),
             ],
           ),
         ],
@@ -916,7 +922,7 @@ class EditAdminBox extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      await deleteUser(ssn);
+                      await updateAdminAuth(ssn);
                       Navigator.pop(context);
                       searchedList = null;
                       notifyParent();
@@ -924,7 +930,7 @@ class EditAdminBox extends StatelessWidget {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            content: UserDeletedBox(),
+                            content: const UserAuthChangedBox(),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -1152,6 +1158,64 @@ class UserUpdatedBox extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 'Kullanıcı bilgileri güncellendi.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: fontSizeM,
+                ),
+              ),
+            ),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+              },
+              child: Container(
+                alignment: Alignment.center,
+                height: 50,
+                width: 200,
+                margin: const EdgeInsets.all(5),
+                child: Text(
+                  'Tamam',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: fontSizeM,
+                  ),
+                ),
+                decoration: const BoxDecoration(
+                  color: Colors.blueAccent,
+                  borderRadius: BorderRadius.all(Radius.circular(5)),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class UserAuthChangedBox extends StatelessWidget {
+  const UserAuthChangedBox({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      child: Container(
+        alignment: Alignment.center,
+        margin: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              margin: const EdgeInsets.all(10),
+              alignment: Alignment.center,
+              child: Text(
+                'Kullanıcı yetkisi değiştirildi.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

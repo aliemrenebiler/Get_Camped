@@ -3,6 +3,7 @@ import 'allclasses.dart';
 import 'allvariables.dart';
 
 // === ADMIN FUNCTIONS ===
+// User Management
 Future getAllUsers() async {
   searchedList = null;
   searchedList = await connection.query('''
@@ -99,10 +100,10 @@ Future updateUser(String ssn) async {
 }
 
 Future updateAdminAuth(String ssn) async {
-  var newAuthority;
-  searchedList = null;
+  int newAuthority;
+
   await getSingleUser(ssn);
-  if (searchedList[0][0] == 1) {
+  if (searchedList[0][5] == 1) {
     newAuthority = 0;
   } else {
     newAuthority = 1;
@@ -119,6 +120,7 @@ Future updateAdminAuth(String ssn) async {
       'is_admin': newAuthority,
     },
   );
+  return 1;
 }
 
 Future deleteUser(String ssn) async {
@@ -130,6 +132,128 @@ Future deleteUser(String ssn) async {
     ''',
     substitutionValues: {
       'ssn': ssn,
+    },
+  );
+}
+
+// Camping Management
+Future getAllCamps() async {
+  var count;
+  searchedList = null;
+
+  count = await connection.query(
+    '''
+      SELECT count(*) FROM camping
+    ''',
+  );
+
+  if (count[0][0] == 0) {
+    searchedList = null;
+  } else {
+    searchedList = await connection.query(
+      '''
+        SELECT *
+        FROM camping
+      ''',
+    );
+  }
+}
+
+Future getSingleCamp(int id) async {
+  var count;
+  searchedList = null;
+
+  count = await connection.query(
+    '''
+      SELECT count(*)
+      FROM camping
+      WHERE cid=@cid;
+    ''',
+    substitutionValues: {
+      'cid': id,
+    },
+  );
+
+  if (count[0][0] == 0) {
+    searchedList = null;
+  } else {
+    searchedList = await connection.query(
+      '''
+      SELECT * 
+      FROM camping
+      WHERE cid=@cid;
+      ''',
+      substitutionValues: {
+        'cid': id,
+      },
+    );
+    return searchedList[0][0];
+  }
+}
+
+Future<int> addNewCamp(bool tentValue) async {
+  if (nameController.text.isEmpty ||
+      cityController.text.isEmpty ||
+      dailyPriceController.text.isEmpty ||
+      capacityController.text.isEmpty) {
+    return 0;
+  } else {
+    try {
+      await connection.query(
+        '''
+          INSERT INTO camping
+          VALUES (nextval('seqCmp'),@cname,@city,@dailyprice,@tent,@capacity);
+        ''',
+        substitutionValues: {
+          'cname': nameController.text,
+          'city': cityController.text,
+          'dailyprice': int.parse(dailyPriceController.text),
+          'tent': tentValue,
+          'capacity': int.parse(capacityController.text),
+        },
+      );
+      return 1;
+    } catch (e) {
+      return -1;
+    }
+  }
+}
+
+Future updateCamp(int id, bool tentExist) async {
+  searchedList = null;
+  await getSingleCamp(id);
+  var oldCamp = searchedList[0];
+  await connection.query(
+    '''
+        UPDATE camping
+        SET cname = @cname, city = @city,
+        dailyprice = @dailyprice,
+        tent = @tent,
+        WHERE cid = @id;
+      ''',
+    substitutionValues: {
+      'cid': id,
+      'cname':
+          (nameController.text.isNotEmpty) ? nameController.text : oldCamp[1],
+      'city':
+          (cityController.text.isNotEmpty) ? cityController.text : oldCamp[2],
+      'dailyPrice': (dailyPriceController.text.isNotEmpty)
+          ? dailyPriceController.text
+          : oldCamp[3],
+      'tent': tentExist,
+    },
+  );
+}
+
+Future deleteCamp(int id) async {
+  searchedList = null;
+  searchedList = await connection.query(
+    '''
+      DELETE FROM camping
+      WHERE cid=@cid;
+    ''',
+    substitutionValues: {
+      'cid': id,
     },
   );
 }
