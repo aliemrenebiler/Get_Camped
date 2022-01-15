@@ -352,7 +352,7 @@ Future getUserRsv(String ssn) async {
     '''
       SELECT count(*)
       FROM reservation r, users u
-      WHERE r.ussn=u.ssn;
+      WHERE r.ussn=u.ssn AND r.ussn=@ssn;
     ''',
     substitutionValues: {
       'ssn': ssn,
@@ -366,39 +366,8 @@ Future getUserRsv(String ssn) async {
       '''
       SELECT *
       FROM reservation r, users u
-      WHERE r.ussn=u.ssn
+      WHERE r.ussn=u.ssn AND r.ussn=@ssn
       ORDER BY startDate;
-    ''',
-      substitutionValues: {
-        'ssn': ssn,
-      },
-    );
-  }
-}
-
-Future getSingleUserRsv(String ssn) async {
-  var count;
-  searchedList = null;
-
-  count = await connection.query(
-    '''
-      SELECT count(*)
-      FROM users
-      WHERE ssn=@ssn;
-    ''',
-    substitutionValues: {
-      'ssn': ssn,
-    },
-  );
-
-  if (count[0][0] == 0) {
-    searchedList = null;
-  } else {
-    searchedList = await connection.query(
-      '''
-      SELECT *
-      FROM users
-      WHERE ssn=@ssn;
     ''',
       substitutionValues: {
         'ssn': ssn,
@@ -438,6 +407,19 @@ Future<int> addNewUserRsv(bool tent) async {
       return -1;
     }
   }
+}
+
+Future deleteRsv(int id) async {
+  searchedList = null;
+  searchedList = await connection.query(
+    '''
+      DELETE FROM reservation
+      WHERE rid=@rid;
+    ''',
+    substitutionValues: {
+      'rid': id,
+    },
+  );
 }
 
 // === GENERAL FUNCTIONS ===
@@ -510,80 +492,107 @@ Future clearAllControllers() async {
   minPriceController.clear();
 }
 
-Future getReservations() async {
-  var campNameSearch;
-  var cityNameSearch;
-  var dateSearch;
-  var ssnSearch;
+// Future<String> getCamp(int campId) async {
+//   searchedList = null;
+//   searchedList = await connection.query(
+//     '''
+//     SELECT cName 
+//     FROM camping
+//     WHERE campingId=@campId;
+//     ''',
+//     substitutionValues: {
+//       'campId': campId,
+//     },
+//   );
+//   return searchedList[0][0];
+// }
 
-  searchedList = null;
+// Future getReservations() async {
+//   var campNameSearch;
+//   var cityNameSearch;
+//   var dateSearch;
+//   var ssnSearch;
+//   searchedList = null;
+//   ssnSearch = await connection.query(
+//     '''
+//     SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
+//     FROM reservation
+//     WHERE ussn=@ussn;
+//     ''',
+//     substitutionValues: {
+//       'ussn': ssnController.text,
+//     },
+//   );
+//   campNameSearch = await connection.query(
+//     '''
+//     SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
+//     FROM reservation,camping
+//     WHERE cName=@campName AND campingId=cID;
+//     ''',
+//     substitutionValues: {
+//       'campName': campNameController.text,
+//     },
+//   );
+//   cityNameSearch = await connection.query(
+//     '''
+//     SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
+//     FROM reservation,camping
+//     WHERE city=@city AND campingId=cId;
+//     ''',
+//     substitutionValues: {
+//       'city': cityController.text,
+//     },
+//   );
+//   dateSearch = await connection.query(
+//     '''
+//     SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
+//     FROM reservation
+//     WHERE startDate=@date;
+//     ''',
+//     substitutionValues: {
+//       'date': dateController.text,
+//     },
+//   );
+//   if (dateSearch[0] == '' &&
+//       cityNameSearch[0] == '' &&
+//       campNameSearch[0] == '' &&
+//       ssnSearch[0] == '') {
+//     searchedList = null;
+//   }
+// }
 
-  ssnSearch = await connection.query(
-    '''
-    SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
-    FROM reservation
-    WHERE ussn=@ussn;
-    ''',
-    substitutionValues: {
-      'ussn': ssnController.text,
-    },
-  );
-  campNameSearch = await connection.query(
-    '''
-    SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
-    FROM reservation,camping
-    WHERE cName=@campName AND campingId=cID;
-    ''',
-    substitutionValues: {
-      'campName': campNameController.text,
-    },
-  );
-  cityNameSearch = await connection.query(
-    '''
-    SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
-    FROM reservation,camping
-    WHERE city=@city AND campingId=cId;
-    ''',
-    substitutionValues: {
-      'city': cityController.text,
-    },
-  );
-  dateSearch = await connection.query(
-    '''
-    SELECT rId,ussn, campingId, startDate,dayAmount,tent,totalCost,pcount
-    FROM reservation
-    WHERE startDate=@date;
-    ''',
-    substitutionValues: {
-      'date': dateController.text,
-    },
-  );
-  if (dateSearch[0] == '' &&
-      cityNameSearch[0] == '' &&
-      campNameSearch[0] == '' &&
-      ssnSearch[0] == '') {
-    searchedList = null;
-  }
-}
+// Future getAllReservations() async {
+//   searchedList = null;
+//   searchedList = await connection.query('''
+//     SELECT * FROM reservation
+//     ''');
+// }
 
-Future getAllReservations() async {
-  searchedList = null;
-  searchedList = await connection.query('''
-    SELECT * FROM reservation
-    ''');
-}
-
-Future<String> getCamp(int campId) async {
-  searchedList = null;
-  searchedList = await connection.query(
-    '''
-    SELECT cName 
-    FROM camping
-    WHERE campingId=@campId;
-    ''',
-    substitutionValues: {
-      'campId': campId,
-    },
-  );
-  return searchedList[0][0];
-}
+// Future getSingleUserRsv(String ssn) async {
+//   var count;
+//   searchedList = null;
+//   count = await connection.query(
+//     '''
+//       SELECT count(*)
+//       FROM users
+//       WHERE ssn=@ssn;
+//     ''',
+//     substitutionValues: {
+//       'ssn': ssn,
+//     },
+//   );
+//   if (count[0][0] == 0) {
+//     searchedList = null;
+//   } else {
+//     searchedList = await connection.query(
+//       '''
+//       SELECT *
+//       FROM users
+//       WHERE ssn=@ssn;
+//     ''',
+//       substitutionValues: {
+//         'ssn': ssn,
+//       },
+//     );
+//   }
+// }

@@ -1114,7 +1114,7 @@ class CampDeletedBox extends StatelessWidget {
               margin: const EdgeInsets.all(10),
               alignment: Alignment.center,
               child: Text(
-                'Kullanıcı başarıyla silindi.',
+                'Kamp alanı başarıyla silindi.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,

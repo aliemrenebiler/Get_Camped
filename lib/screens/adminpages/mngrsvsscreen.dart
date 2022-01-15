@@ -155,7 +155,7 @@ class SearchRsvBox extends StatelessWidget {
           child: FittedBox(
             child: InkWell(
               onTap: () async {
-                await getReservations();
+                // await getReservations();
                 await clearAllControllers();
                 notifyParent();
               },
@@ -288,7 +288,7 @@ class ReservationBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var cName = getCamp(campingId);
+    var cName; // = getCamp(campingId);
     return Container(
       alignment: Alignment.center,
       margin: const EdgeInsets.all(5),

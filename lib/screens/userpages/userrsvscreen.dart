@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:get_camped/database/allclasses.dart';
+import 'package:get_camped/screens/userpages/usercampsscreen.dart';
 import '../../database/allmethods.dart';
 import '../../database/allvariables.dart';
 import '../../database/theme.dart';
@@ -40,10 +43,10 @@ class _UsersRsvScreenState extends State<UsersRsvScreen> {
                 Expanded(
                   child: AddRsvButton(notifyParent: refresh),
                 ),
-                Expanded(
-                  flex: 1,
-                  child: CampSearchButton(),
-                ),
+                // Expanded(
+                //   flex: 1,
+                //   child: CampSearchButton(),
+                // ),
               ],
             ),
             (searchedList != null)
@@ -52,14 +55,14 @@ class _UsersRsvScreenState extends State<UsersRsvScreen> {
                       physics: const BouncingScrollPhysics(),
                       children: [
                         for (var x in searchedList)
-                          UserBox(
-                            ssn: x[0] ?? '--',
-                            name: x[1] ?? '--',
-                            surname: x[2] ?? '--',
-                            phone: x[3] ?? '--',
-                            hesCode: x[4] ?? '--',
+                          RsvBox(
+                            rId: x[0],
+                            ussn: x[1],
+                            campingId: x[2],
+                            startDate: x[3],
+                            dayAmount: x[4],
                             notifyParent: refresh,
-                          ),
+                          )
                       ],
                     ),
                   )
@@ -195,20 +198,20 @@ class CampSearchButton extends StatelessWidget {
 }
 
 // REPEATED USER BOX
-class UserBox extends StatelessWidget {
-  final String ssn;
-  final String name;
-  final String surname;
-  final String phone;
-  final String hesCode;
+class RsvBox extends StatelessWidget {
+  final int rId;
+  final String ussn;
+  final int campingId;
+  final DateTime startDate;
+  final int dayAmount;
   final Function() notifyParent;
-  const UserBox({
+  const RsvBox({
     Key? key,
-    required this.ssn,
-    required this.name,
-    required this.surname,
-    required this.phone,
-    required this.hesCode,
+    required this.rId,
+    required this.ussn,
+    required this.campingId,
+    required this.startDate,
+    required this.dayAmount,
     required this.notifyParent,
   }) : super(key: key);
   @override
@@ -225,7 +228,7 @@ class UserBox extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  'TC: ' + ssn,
+                  'ID: ' + rId.toString(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white60,
@@ -233,7 +236,9 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  name + ' ' + surname,
+                  campingId.toString() +
+                      ' - ' +
+                      DateFormat('yyyy-MM-dd').format(startDate),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -250,7 +255,7 @@ class UserBox extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Telefon: ',
+                  'Gün Sayısı: ',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white60,
@@ -258,7 +263,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  phone,
+                  dayAmount.toString(),
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white,
@@ -275,7 +280,7 @@ class UserBox extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'HES Kodu: ',
+                  'Kullanıcı ID: ',
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white60,
@@ -283,7 +288,7 @@ class UserBox extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  hesCode,
+                  ussn,
                   textAlign: TextAlign.left,
                   style: TextStyle(
                     color: Colors.white,
@@ -298,55 +303,6 @@ class UserBox extends StatelessWidget {
             children: [
               Expanded(
                 child: Container(
-                  child: InkWell(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            content: EditRsvBox(
-                              ssn: ssn,
-                              name: name,
-                              surname: surname,
-                              phone: phone,
-                              hesCode: hesCode,
-                              notifyParent: notifyParent,
-                            ),
-                            contentPadding: EdgeInsets.zero,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.all(5),
-                      alignment: Alignment.center,
-                      height: 50,
-                      child: Text(
-                        'Düzenle',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: fontSizeM,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.blueAccent,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(5)),
-                        border: Border.all(
-                          width: 2,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
                   margin: const EdgeInsets.all(5),
                   child: InkWell(
                     onTap: () {
@@ -355,7 +311,7 @@ class UserBox extends StatelessWidget {
                         builder: (BuildContext context) {
                           return AlertDialog(
                             content: DeleteRsvBox(
-                                ssn: ssn, notifyParent: notifyParent),
+                                rId: rId, notifyParent: notifyParent),
                             contentPadding: EdgeInsets.zero,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -591,244 +547,10 @@ class _AddRsvBoxState extends State<AddRsvBox> {
   }
 }
 
-class EditRsvBox extends StatelessWidget {
-  final String ssn;
-  final String name;
-  final String surname;
-  final String phone;
-  final String hesCode;
-  final Function() notifyParent;
-  const EditRsvBox({
-    Key? key,
-    required this.ssn,
-    required this.name,
-    required this.surname,
-    required this.phone,
-    required this.hesCode,
-    required this.notifyParent,
-  }) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Container(
-          margin: const EdgeInsets.all(20),
-          width: MediaQuery.of(context).size.width * 2 / 3,
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.all(10),
-                alignment: Alignment.center,
-                child: Text(
-                  'Yeni Rezervasyon Bilgileri',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: fontSizeM,
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Şuanki İsim: ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      name,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: nameController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni İsim",
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Şuanki Soyisim: ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      surname,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: surnameController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni Soyisim",
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Şuanki Telefon: ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      phone,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: phoneController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni Telefon",
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                margin: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Şuanki HES Kodu: ',
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        color: Colors.black54,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      hesCode,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
-                child: TextFormField(
-                  controller: hesCodeController,
-                  decoration: const InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: "Yeni HES Kodu",
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  updateUser(ssn);
-                  Navigator.pop(context);
-                  notifyParent();
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        content: RsvUpdatedBox(),
-                        contentPadding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50,
-                  width: 200,
-                  margin: const EdgeInsets.all(5),
-                  child: Text(
-                    'Kaydet',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: fontSizeM,
-                    ),
-                  ),
-                  decoration: const BoxDecoration(
-                    color: Colors.blueAccent,
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class DeleteRsvBox extends StatelessWidget {
-  final String ssn;
+  final int rId;
   final Function() notifyParent;
-  const DeleteRsvBox({Key? key, required this.ssn, required this.notifyParent})
+  const DeleteRsvBox({Key? key, required this.rId, required this.notifyParent})
       : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -887,7 +609,7 @@ class DeleteRsvBox extends StatelessWidget {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      await deleteUser(ssn);
+                      await deleteRsv(rId);
                       Navigator.pop(context);
                       searchedList = null;
                       notifyParent();
@@ -958,64 +680,6 @@ class UserAddedRsvBox extends StatelessWidget {
                     : (control == 0)
                         ? 'Bilgiler boş bırakılamaz.'
                         : 'Bu rezervasyon zaten var.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontSize: fontSizeM,
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                alignment: Alignment.center,
-                height: 50,
-                width: 200,
-                margin: const EdgeInsets.all(5),
-                child: Text(
-                  'Tamam',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fontSizeM,
-                  ),
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.blueAccent,
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class RsvUpdatedBox extends StatelessWidget {
-  const RsvUpdatedBox({Key? key}) : super(key: key);
-  @override
-  Widget build(BuildContext context) {
-    return FittedBox(
-      child: Container(
-        alignment: Alignment.center,
-        margin: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.all(10),
-              alignment: Alignment.center,
-              child: Text(
-                'Rezervasyon bilgileri güncellendi.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
