@@ -10,6 +10,9 @@ import 'screens/adminpages/mngcampsscreen.dart';
 import 'screens/adminpages/mngusersscreen.dart';
 //import 'screens/adminpages/mngrsvsscreen.dart';
 
+// Admin Pages
+import 'screens/userpages/usercampsscreen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await connection.open();
@@ -38,6 +41,9 @@ class MyApp extends StatelessWidget {
         '/mngusersscreen': (context) => const MngUsersScreen(),
         '/mngcampsscreen': (context) => const MngCampsScreen(),
         //'/mngrsvsscreen': (context) => const MngRsvsScreen(),
+
+        // user panel routes
+        '/searchcampscreen': (context) => const UsersCampsScreen(),
       },
     );
   }

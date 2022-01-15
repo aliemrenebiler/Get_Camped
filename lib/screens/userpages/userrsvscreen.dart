@@ -21,7 +21,7 @@ class _UsersRsvScreenState extends State<UsersRsvScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'Kullanıcıları Yönet',
+          'Kullanıcı Paneli',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
@@ -34,15 +34,16 @@ class _UsersRsvScreenState extends State<UsersRsvScreen> {
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
         child: Column(
           children: [
-            SearchUserBox(notifyParent: refresh),
+            AllRsvsButton(notifyParent: refresh),
             Row(
               children: [
-                // Expanded(
-                //   child: ListAllButton(notifyParent: refresh),
-                // ),
                 Expanded(
                   child: AddRsvButton(notifyParent: refresh),
-                )
+                ),
+                Expanded(
+                  flex: 1,
+                  child: CampSearchButton(),
+                ),
               ],
             ),
             (searchedList != null)
@@ -81,45 +82,38 @@ class _UsersRsvScreenState extends State<UsersRsvScreen> {
 }
 
 // TOP BUTTONS AND SEARCH
-class SearchUserBox extends StatelessWidget {
+class AllRsvsButton extends StatelessWidget {
   final Function() notifyParent;
-  SearchUserBox({Key? key, required this.notifyParent}) : super(key: key);
+  const AllRsvsButton({Key? key, required this.notifyParent}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      children: [
-        Container(
-          child: FittedBox(
-            child: InkWell(
-              onTap: () async {
-                await getSingleUser(currentUser.ssn!);
-                await clearAllControllers();
-                notifyParent();
-              },
-              child: Container(
-                alignment: Alignment.center,
-                width: 70,
-                height: 50,
-                child: Text(
-                  'Rezervasyon Görüntüle',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: fontSizeM,
-                  ),
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.all(Radius.circular(5)),
-                ),
-              ),
+    return Container(
+      child: InkWell(
+        onTap: () async {
+          await getUserRsv(currentUser.ssn!);
+          await clearAllControllers();
+          print(searchedList);
+          notifyParent();
+        },
+        child: Container(
+          alignment: Alignment.center,
+          height: 50,
+          child: Text(
+            'Tüm Rezervasyonlar',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: fontSizeM,
             ),
           ),
-          margin: const EdgeInsets.all(5),
+          decoration: const BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
         ),
-      ],
+      ),
+      margin: const EdgeInsets.all(5),
     );
   }
 }
@@ -168,6 +162,38 @@ class AddRsvButton extends StatelessWidget {
   }
 }
 
+class CampSearchButton extends StatelessWidget {
+  const CampSearchButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: InkWell(
+        onTap: () async {
+          Navigator.pushNamed(context, '/searchcampscreen');
+        },
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.blueAccent,
+            borderRadius: BorderRadius.all(Radius.circular(5)),
+          ),
+          alignment: Alignment.center,
+          height: 50,
+          child: Text(
+            'Kamp Arama',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: fontSizeM,
+            ),
+          ),
+        ),
+      ),
+      margin: const EdgeInsets.all(5),
+    );
+  }
+}
+
 // REPEATED USER BOX
 class UserBox extends StatelessWidget {
   final String ssn;
@@ -185,7 +211,6 @@ class UserBox extends StatelessWidget {
     required this.hesCode,
     required this.notifyParent,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -376,9 +401,17 @@ class UserBox extends StatelessWidget {
 }
 
 // FUNCTION BOXES
-class AddRsvBox extends StatelessWidget {
+class AddRsvBox extends StatefulWidget {
   final Function() notifyParent;
-  const AddRsvBox({Key? key, required this.notifyParent}) : super(key: key);
+  AddRsvBox({Key? key, required this.notifyParent}) : super(key: key);
+
+  @override
+  State<AddRsvBox> createState() => _AddRsvBoxState();
+}
+
+class _AddRsvBoxState extends State<AddRsvBox> {
+  String tentExist = 'Yok';
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -413,11 +446,11 @@ class AddRsvBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: ssnController,
+                    controller: idController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "TC Kimlik No",
+                      labelText: "Kamp ID",
                     ),
                   ),
                 ),
@@ -427,24 +460,11 @@ class AddRsvBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: "Kamp Adı",
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(10),
-                child: Container(
-                  child: TextFormField(
-                    controller: surnameController,
+                    controller: dateController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "Başlangıç Tarihi (Gün.Ay.Yıl)",
+                      labelText: "Başlangıç Tarihi (Yıl.Ay.Gün)",
                     ),
                   ),
                 ),
@@ -454,7 +474,7 @@ class AddRsvBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: phoneController,
+                    controller: dayController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
@@ -468,40 +488,71 @@ class AddRsvBox extends StatelessWidget {
                 margin: const EdgeInsets.all(10),
                 child: Container(
                   child: TextFormField(
-                    controller: hesCodeController,
+                    controller: pcountController,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
                       border: UnderlineInputBorder(),
-                      labelText: "HES Kodu",
+                      labelText: "Kişi Sayısı",
                     ),
                   ),
                 ),
               ),
-              Container(
-                alignment: Alignment.center,
-                margin: const EdgeInsets.all(10),
-                child: Container(
-                  child: TextFormField(
-                    controller: tentController,
-                    decoration: const InputDecoration(
-                      border: UnderlineInputBorder(),
-                      labelText: "Çadır istiyor musunuz?",
+              Row(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.all(5),
+                    child: Text(
+                      'Çadır: ',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: fontSizeS,
+                      ),
                     ),
                   ),
-                ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(5),
+                      child: DropdownButton<String>(
+                        value: tentExist,
+                        icon: const Icon(Icons.arrow_downward),
+                        elevation: 16,
+                        style: const TextStyle(color: Colors.black),
+                        underline: Container(
+                          height: 1,
+                          color: Colors.grey,
+                        ),
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            tentExist = newValue!;
+                          });
+                        },
+                        items: <String>['Var', 'Yok']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
+                ],
               ),
               Container(
                 child: InkWell(
                   onTap: () async {
                     Navigator.pop(context);
-                    int control = await addNewUser();
+                    int control =
+                        await addNewUserRsv(tentExist == 'var' ? true : false);
                     await clearAllControllers();
                     searchedList = null;
-                    notifyParent();
+                    widget.notifyParent();
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          content: UserAddedBox(
+                          content: UserAddedRsvBox(
                             control: control,
                           ),
                           contentPadding: EdgeInsets.zero,
@@ -882,9 +933,9 @@ class DeleteRsvBox extends StatelessWidget {
 }
 
 // INFORMATION BOXES
-class UserAddedBox extends StatelessWidget {
+class UserAddedRsvBox extends StatelessWidget {
   final int control;
-  const UserAddedBox({Key? key, required this.control}) : super(key: key);
+  const UserAddedRsvBox({Key? key, required this.control}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return FittedBox(

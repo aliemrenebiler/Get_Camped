@@ -21,12 +21,12 @@ class _UsersCampsScreenState extends State<UsersCampsScreen> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text(
+        title: Text(
           'Kamp Alanlarını Görüntüle',
           textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white,
-            fontSize: 20,
+            fontSize: fontSizeL,
           ),
         ),
         backgroundColor: Colors.grey,
@@ -36,16 +36,6 @@ class _UsersCampsScreenState extends State<UsersCampsScreen> {
         child: Column(
           children: [
             SearchCampBox(notifyParent: refresh),
-            // Row(
-            //   children: [
-            //     // Expanded(
-            //     //   child: ListAllButton(notifyParent: refresh),
-            //     // ),
-            //     Expanded(
-            //       child: AddRsvButton(notifyParent: refresh),
-            //     )
-            //   ],
-            // ),
             (searchedList != null)
                 ? Expanded(
                     child: ListView(
@@ -206,7 +196,8 @@ class _SearchCampBoxState extends State<SearchCampBox> {
               child: FittedBox(
                 child: InkWell(
                   onTap: () async {
-                    await getSingleUser(ssnController.text);
+                    bool tentValue = (tentExist == 'Var') ? true : false;
+                    await searchForCamp(tentValue);
                     await clearAllControllers();
                     widget.notifyParent();
                   },

@@ -1,4 +1,5 @@
 import 'package:postgres/postgres.dart';
+import 'package:intl/intl.dart';
 import 'allclasses.dart';
 import 'allvariables.dart';
 
@@ -187,7 +188,6 @@ Future getSingleCamp(int id) async {
         'cid': id,
       },
     );
-    return searchedList[0][0];
   }
 }
 
@@ -235,8 +235,6 @@ Future updateCamp(int id, bool tentExist) async {
       'cid': id,
       'cname':
           (nameController.text.isNotEmpty) ? nameController.text : oldCamp[1],
-      'city':
-          (cityController.text.isNotEmpty) ? cityController.text : oldCamp[2],
       'dailyPrice': (dailyPriceController.text.isNotEmpty)
           ? dailyPriceController.text
           : oldCamp[3],
@@ -258,19 +256,106 @@ Future deleteCamp(int id) async {
   );
 }
 
+Future searchForCamp(bool tentValue) async {
+  var campNameSearch;
+  var citynameSearch;
+  var tentExistSearch;
+  var maxPriceSearch;
+  var minPriceSearch;
+  var campIdSearch;
+
+  if (nameController.text.isNotEmpty) {
+    campNameSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE cname=@cname;
+    ''',
+      substitutionValues: {
+        'cname': nameController.text,
+      },
+    );
+  }
+
+  if (cityController.text.isNotEmpty) {
+    campNameSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE city=@city;
+    ''',
+      substitutionValues: {
+        'city': cityController.text,
+      },
+    );
+  }
+
+  if (tentValue != null) {
+    tentExistSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE tent=@tent;
+    ''',
+      substitutionValues: {
+        'tent': tentValue,
+      },
+    );
+  }
+
+  if (maxPriceController.text.isNotEmpty) {
+    maxPriceSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE dailyPrice < @max;
+    ''',
+      substitutionValues: {
+        'max': int.parse(maxPriceController.text),
+      },
+    );
+  }
+
+  if (minPriceController.text.isNotEmpty) {
+    minPriceSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE dailyPrice > @min;
+    ''',
+      substitutionValues: {
+        'min': int.parse(minPriceController.text),
+      },
+    );
+  }
+
+  if (idController.text.isNotEmpty) {
+    campIdSearch = await connection.query(
+      '''
+    SELECT *
+      FROM camping
+      WHERE cid=@cid;
+    ''',
+      substitutionValues: {
+        'cid': int.parse(idController.text),
+      },
+    );
+  }
+}
+
 // === USER FUNCTIONS ===
-Future getUserRsv(int id) async {
+Future getUserRsv(String ssn) async {
   var count;
   searchedList = null;
 
   count = await connection.query(
     '''
-      SELECT *
-      FROM camping
-      WHERE cid=@id;
+      SELECT count(*)
+      FROM reservation r, users u
+      WHERE r.ussn=u.ssn;
     ''',
     substitutionValues: {
-      'id': id,
+      'ssn': ssn,
     },
   );
 
@@ -280,11 +365,12 @@ Future getUserRsv(int id) async {
     searchedList = await connection.query(
       '''
       SELECT *
-      FROM camping
-      WHERE cid=@id;
+      FROM reservation r, users u
+      WHERE r.ussn=u.ssn
+      ORDER BY startDate;
     ''',
       substitutionValues: {
-        'id': id,
+        'ssn': ssn,
       },
     );
   }
@@ -318,6 +404,39 @@ Future getSingleUserRsv(String ssn) async {
         'ssn': ssn,
       },
     );
+  }
+}
+
+Future<int> addNewUserRsv(bool tent) async {
+  if (idController.text.isEmpty ||
+      dateController.text.isEmpty ||
+      dayController.text.isEmpty) {
+    return 0;
+  } else {
+    try {
+      print(idController.text);
+      print(dateController.text);
+      print(dayController.text);
+      searchedList = await connection.query(
+        '''
+          INSERT INTO reservation
+          VALUES (nextval('seqrsv') ,@ussn,@campingid,@startdate,@dayamount,@tent,@pcount);
+        ''',
+        substitutionValues: {
+          'ussn': currentUser.ssn,
+          'campingid': idController.text,
+          'startdate': DateFormat('yyyy.MM.dd').parse(dateController.text),
+          'dayamount': dayController.text,
+          'tent': tent,
+          'pcount': pcountController.text
+        },
+      );
+      return 1;
+    } catch (e) {
+      print(searchedList);
+      print(e);
+      return -1;
+    }
   }
 }
 

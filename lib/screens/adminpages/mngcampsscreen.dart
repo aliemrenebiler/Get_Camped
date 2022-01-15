@@ -712,7 +712,6 @@ class _EditCampBoxState extends State<EditCampBox> {
               Container(
                 margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
                 child: TextFormField(
-                  keyboardType: TextInputType.number,
                   controller: nameController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
@@ -812,7 +811,8 @@ class _EditCampBoxState extends State<EditCampBox> {
               Container(
                 margin: const EdgeInsets.fromLTRB(5, 0, 5, 20),
                 child: TextFormField(
-                  controller: phoneController,
+                  keyboardType: TextInputType.number,
+                  controller: dailyPriceController,
                   decoration: const InputDecoration(
                     border: UnderlineInputBorder(),
                     labelText: "Yeni Günlük Ücret",
@@ -824,6 +824,7 @@ class _EditCampBoxState extends State<EditCampBox> {
                   bool tentValue = (tentExist == 'Var') ? true : false;
                   updateCamp(widget.id, tentValue);
                   Navigator.pop(context);
+                  clearAllControllers();
                   widget.notifyParent();
                   showDialog(
                     context: context,
