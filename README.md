@@ -7,8 +7,8 @@ This project is made for Database Management lesson. It uses PostgreSQL as datab
 The project is not finished and ended.
 
 Collaborated with Emre Urcu and Kübra Tunç
-https://github.com/emreurcu \n
-https://github.com/kubratunc \n
+- https://github.com/emreurcu
+- https://github.com/kubratunc
 
 ## Getting Started
 
