@@ -14,7 +14,7 @@ var connection = PostgreSQLConnection(
   5432,
   'getCamped_db',
   username: 'postgres',
-  password: '7756',
+  password: '0000',
 );
 
 var currentUser = User();
