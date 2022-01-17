@@ -4,7 +4,7 @@ A camp reservation system.
 
 This project is made for Database Management lesson. It uses PostgreSQL as database and Flutter for front-end.
 
-It can add add users and camp sites as admin. Users can check their reservations and make searchs on them.
+It can add users and camp sites as admin. Users can check their reservations and make searchs on them.
 
 The project is not finished and ended.
 
